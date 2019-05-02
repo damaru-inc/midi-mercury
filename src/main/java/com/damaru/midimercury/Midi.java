@@ -17,7 +17,33 @@ public class Midi {
         }
         return ret;
     }
-    
+
+    public static List<MidiDevice> getMidiReceivers() throws Exception {
+        List<MidiDevice> ret = new ArrayList<>();
+        for (MidiDevice.Info info : MidiSystem.getMidiDeviceInfo()) {
+            MidiDevice device = MidiSystem.getMidiDevice(info);
+            Main.log("checking receiver " + info.getName());
+
+            if (device.getMaxReceivers() != 0 && !info.getName().startsWith("Real Time Sequencer")) {
+                ret.add(device);
+            }
+        }
+        return ret;
+    }
+
+    public static List<MidiDevice> getMidiTransmitters() throws Exception {
+        List<MidiDevice> ret = new ArrayList<>();
+        for (MidiDevice.Info info : MidiSystem.getMidiDeviceInfo()) {
+            MidiDevice device = MidiSystem.getMidiDevice(info);
+            Main.log("checking transmitter " + info.getName());
+
+            if (device.getMaxTransmitters() != 0 && !info.getName().startsWith("Real Time Sequencer")) {
+                ret.add(device);
+            }
+        }
+        return ret;
+    }
+
     public MidiDevice getDevice(String name) throws Exception {
         MidiDevice ret = null;
         for (MidiDevice.Info info : MidiSystem.getMidiDeviceInfo()) {
@@ -25,8 +51,8 @@ public class Midi {
                 ret = MidiSystem.getMidiDevice(info);
                 break;
             }
-        }        
-        
+        }
+
         return ret;
     }
 

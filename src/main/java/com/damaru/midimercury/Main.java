@@ -1,10 +1,11 @@
 package com.damaru.midimercury;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
@@ -62,31 +63,33 @@ public class Main {
         MidiDevice toDevice = null;
 
         if (from) {
-            fromDevice = pickDevice("Select the midi device to read from");
+            fromDevice = pickDevice(true);
 
             Transmitter transmitter = fromDevice.getTransmitter();
-
-            if (transmitter != null) {
-                SolacePublisher publisher = new SolacePublisher(cmd);
-                MidiReceiver midiReceiver = new MidiReceiver(cmd, publisher);
-                fromDevice.open();
-                transmitter.setReceiver(midiReceiver);
-            }
+            SolacePublisher publisher = new SolacePublisher(cmd);
+            MidiReceiver midiReceiver = new MidiReceiver(cmd, publisher);
+            fromDevice.open();
+            transmitter.setReceiver(midiReceiver);
         }
 
         if (to) {
-            //toDevice = pickDevice("Select the midi device to write to");
+            toDevice = pickDevice(false);
+            Receiver receiver = toDevice.getReceiver();
+            toDevice.open();
+            SolaceSubscriber subscriber = new SolaceSubscriber(cmd, receiver);
         }
 
     }
 
-    private static MidiDevice pickDevice(String prompt) throws Exception {
+    private static MidiDevice pickDevice(boolean in) throws Exception {
         MidiDevice ret = null;
+        String prompt = in ? "Select the midi device to read from" : "Select the midi device to write to";
 
         int i = 1;
-        MidiDevice.Info infos[] = MidiSystem.getMidiDeviceInfo();
+        List<MidiDevice> devices = in ? Midi.getMidiTransmitters() : Midi.getMidiReceivers();
 
-        for (MidiDevice.Info info : infos) {
+        for (MidiDevice device : devices) {
+            MidiDevice.Info info = device.getDeviceInfo();
             String desc = String.format("%2d: %s %s from %s version %s", i++, info.getName(), info.getDescription(),
                     info.getVendor(), info.getVersion());
             log(desc);
@@ -112,11 +115,12 @@ public class Main {
             }
         }
 
-        scanner.close();
+        //if (scanner.hasNext()) {
+        //    scanner.next();            
+        //}
 
-        MidiDevice.Info info = infos[num - 1];
-        ret = MidiSystem.getMidiDevice(info);
-        log("You picked " + info.getName());
+        ret = devices.get(num - 1);
+        log("You picked " + ret.getDeviceInfo().getName());
         return ret;
     }
 
@@ -125,7 +129,6 @@ public class Main {
 
         // int numMessages = 10000;
         int numMessages = 400000;
-
 
         MidiReceiver mr = new MidiReceiver(cmd, publisher);
 
@@ -149,8 +152,9 @@ public class Main {
 
         mr.close();
 
-//        String text = "Support for nested build without a settings file was deprecated and will be removed in Gradle 5.0.";
-//        String topic = "a/a";
+        // String text = "Support for nested build without a settings file was
+        // deprecated and will be removed in Gradle 5.0.";
+        // String topic = "a/a";
         //
         // log("" + (new Date()) + " About to send text.");
         // for (int i = 0; i < numMessages; i++) {

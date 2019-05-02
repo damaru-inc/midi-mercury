@@ -6,16 +6,20 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.ShortMessage;
 
+import com.google.gson.Gson;
+
 /**
  *
  * @author mdavis
  */
 public class MidiUtil {
 
+    private Gson gson = new Gson();
+    
     public static MidiJsonMessage getMidiJsonMessage(ShortMessage sm) {
         MidiJsonMessage ret = new MidiJsonMessage();
         ret.setChannel(sm.getChannel());
-        ret.setMidiPort(2);
+        ret.setMidiPort(0);
         ret.setNote(sm.getData1());
         ret.setStatus(sm.getStatus());
         ret.setVelocity(sm.getData2());

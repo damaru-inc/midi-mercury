@@ -14,7 +14,7 @@ import com.solacesystems.jcsmp.TextMessage;
 import com.solacesystems.jcsmp.Topic;
 import com.solacesystems.jcsmp.XMLMessageProducer;
 
-public class SolacePublisher {
+public class SolacePublisher extends Solace {
 
     private XMLMessageProducer producer;
     private TextMessage textMessage = JCSMPFactory.onlyInstance().createMessage(TextMessage.class);
@@ -22,13 +22,7 @@ public class SolacePublisher {
     private HashMap<String, Topic> topics = new HashMap<>();
     
     public SolacePublisher(CommandLine cmd) throws Exception {
-        final JCSMPProperties properties = new JCSMPProperties();
-        properties.setProperty(JCSMPProperties.HOST, cmd.getOptionValue('h'));
-        properties.setProperty(JCSMPProperties.USERNAME, cmd.getOptionValue('u'));
-        properties.setProperty(JCSMPProperties.VPN_NAME,  cmd.getOptionValue('v'));
-        properties.setProperty(JCSMPProperties.PASSWORD, cmd.getOptionValue('p'));
-        final JCSMPSession session = JCSMPFactory.onlyInstance().createSession(properties);
-        session.connect();
+        super(cmd);
         
         producer = session.getMessageProducer(new JCSMPStreamingPublishEventHandler() {
 
