@@ -5,7 +5,7 @@ public class MidiJsonMessage {
     private int channel;
     private int midiPort;
     private int note;
-    private int status;
+    private int command;
     private int velocity;
     
     public int getChannel() {
@@ -26,11 +26,11 @@ public class MidiJsonMessage {
     public void setNote(int note) {
         this.note = note;
     }
-    public int getStatus() {
-        return status;
+    public int getCommand() {
+        return command;
     }
-    public void setStatus(int status) {
-        this.status = status;
+    public void setCommand(int status) {
+        this.command = status;
     }
     public int getVelocity() {
         return velocity;

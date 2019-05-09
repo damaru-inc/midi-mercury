@@ -3,6 +3,7 @@ package com.damaru.midimercury;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.Receiver;
@@ -77,6 +78,11 @@ public class Main {
             Receiver receiver = toDevice.getReceiver();
             toDevice.open();
             SolaceSubscriber subscriber = new SolaceSubscriber(cmd, receiver);
+            
+            if (!from) {
+                final CountDownLatch latch = new CountDownLatch(1);
+                latch.await();
+            }
         }
 
     }
@@ -128,13 +134,13 @@ public class Main {
         SolacePublisher publisher = new SolacePublisher(cmd);
 
         // int numMessages = 10000;
-        int numMessages = 400000;
+        int numMessages = 1;
 
         MidiReceiver mr = new MidiReceiver(cmd, publisher);
 
         log("" + (new Date()) + " About to send midi via text.");
         mr.setBinary(false);
-        ShortMessage sm = new ShortMessage(128, 2, 3, 4);
+        ShortMessage sm = new ShortMessage(144, 2, 3, 4);
         for (int i = 0; i < numMessages; i++) {
             mr.send(sm, 0);
         }

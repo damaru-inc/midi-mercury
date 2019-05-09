@@ -21,13 +21,13 @@ public class MidiUtil {
         ret.setChannel(sm.getChannel());
         ret.setMidiPort(0);
         ret.setNote(sm.getData1());
-        ret.setStatus(sm.getStatus());
+        ret.setCommand(sm.getStatus());
         ret.setVelocity(sm.getData2());
         return ret;
     }
     
     public static ShortMessage getShortMessage(MidiJsonMessage jm) throws InvalidMidiDataException {
-        ShortMessage sm = new ShortMessage(jm.getStatus(), jm.getChannel(), jm.getNote(), jm.getVelocity());
+        ShortMessage sm = new ShortMessage(jm.getCommand(), jm.getChannel(), jm.getNote(), jm.getVelocity());
         return sm;
     }
 
