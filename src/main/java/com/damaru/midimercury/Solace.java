@@ -19,4 +19,11 @@ public class Solace {
         session = JCSMPFactory.onlyInstance().createSession(properties);
         session.connect();
     }
+    
+    public void close() {
+        Main.log("Closing session.");
+        if (session != null && !session.isClosed()) {
+            session.closeSession();
+        }
+    }
 }

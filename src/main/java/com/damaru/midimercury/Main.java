@@ -62,12 +62,14 @@ public class Main {
 
         MidiDevice fromDevice = null;
         MidiDevice toDevice = null;
+        SolacePublisher publisher = null;
+        SolaceSubscriber subscriber = null;
 
         if (from) {
             fromDevice = pickDevice(true);
 
             Transmitter transmitter = fromDevice.getTransmitter();
-            SolacePublisher publisher = new SolacePublisher(cmd);
+            publisher = new SolacePublisher(cmd);
             MidiReceiver midiReceiver = new MidiReceiver(cmd, publisher);
             fromDevice.open();
             transmitter.setReceiver(midiReceiver);
@@ -77,14 +79,18 @@ public class Main {
             toDevice = pickDevice(false);
             Receiver receiver = toDevice.getReceiver();
             toDevice.open();
-            SolaceSubscriber subscriber = new SolaceSubscriber(cmd, receiver);
+            subscriber = new SolaceSubscriber(cmd, receiver);
             
-            if (!from) {
-                final CountDownLatch latch = new CountDownLatch(1);
-                latch.await();
-            }
         }
+        
+        ShutdownHook shutdownHook = new ShutdownHook(publisher, subscriber);
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
 
+        // If we have a publisher we don't need the latch.
+        if (!from && to) {
+            final CountDownLatch latch = new CountDownLatch(1);
+            latch.await();
+        }
     }
 
     private static MidiDevice pickDevice(boolean in) throws Exception {
@@ -177,5 +183,27 @@ public class Main {
         //
         // log("" + (new Date()) + " Finish sending text.");
 
+    }
+    
+    static class ShutdownHook extends Thread {
+        
+        private SolacePublisher publisher;
+        private SolaceSubscriber subscriber;
+        
+        public ShutdownHook(SolacePublisher publisher, SolaceSubscriber subscriber) {
+            this.publisher = publisher;
+            this.subscriber = subscriber;
+        }
+        
+        @Override
+        public void run() {
+            if (publisher != null) {
+                publisher.close();
+            }
+            
+            if (subscriber != null) {
+                subscriber.close();
+            }
+        }
     }
 }

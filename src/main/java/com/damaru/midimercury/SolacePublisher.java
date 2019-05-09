@@ -7,8 +7,6 @@ import org.apache.commons.cli.CommandLine;
 import com.solacesystems.jcsmp.BytesMessage;
 import com.solacesystems.jcsmp.JCSMPException;
 import com.solacesystems.jcsmp.JCSMPFactory;
-import com.solacesystems.jcsmp.JCSMPProperties;
-import com.solacesystems.jcsmp.JCSMPSession;
 import com.solacesystems.jcsmp.JCSMPStreamingPublishEventHandler;
 import com.solacesystems.jcsmp.TextMessage;
 import com.solacesystems.jcsmp.Topic;
@@ -62,5 +60,14 @@ public class SolacePublisher extends Solace {
         bytesMessage.setData(data);
         producer.send(bytesMessage, theTopic);
     }
-
+    
+    @Override
+    public void close() {
+        
+        if (producer != null) {
+            producer.close();
+        }
+        
+        super.close();
+    }
 }

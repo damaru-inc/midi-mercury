@@ -1,7 +1,6 @@
 package com.damaru.midimercury;
 
 import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiDevice;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
@@ -19,9 +18,11 @@ import com.solacesystems.jcsmp.XMLMessageListener;
 
 public class SolaceSubscriber extends Solace {
     
-    Receiver midiReceiver;
-    Gson gson = new Gson();
+    private Receiver midiReceiver;
+    private Gson gson = new Gson();
+    private XMLMessageConsumer consumer;
 
+    // This doesn't work - it seems to hang on the cons.receive() call even when there are messages.
     public void SolaceSubscriberSync(CommandLine cmd, Receiver receiver) throws Exception {
         //super(cmd);
         midiReceiver = receiver;
@@ -93,7 +94,7 @@ public class SolaceSubscriber extends Solace {
         super(cmd);
         midiReceiver = receiver;
     
-        final XMLMessageConsumer cons = session.getMessageConsumer(new XMLMessageListener() {
+        consumer = session.getMessageConsumer(new XMLMessageListener() {
             Gson gson = new Gson();
             
             @Override
@@ -146,10 +147,17 @@ public class SolaceSubscriber extends Solace {
             }
         });
         
-        
-        
         final Topic topic = JCSMPFactory.onlyInstance().createTopic("midi/>");
         session.addSubscription(topic);
-        cons.start();
+        consumer.start();
+    }
+    
+    @Override
+    public void close() {
+        if (consumer != null) {
+            consumer.close();
+        }
+        
+        super.close();
     }
 }
