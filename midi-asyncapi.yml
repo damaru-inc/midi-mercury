@@ -1,0 +1,71 @@
+asyncapi: 2.0.0-rc1
+info:
+  title: midi-mercury
+  version: 1.0.0
+  description: |
+    Sends midi messages through message brokers.
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0'
+servers:
+  - url: messaging.solace.cloud
+    description: Solace broker
+    variables:
+      password:
+        default: somepassword
+      port:
+        default: '55555'
+      username:
+        default: solace-cloud-client
+      vpn:
+        default: vmr-123
+    protocol: smf
+components:
+  messages:
+    midi:
+      summary: A midi message in json format
+      payload:
+        $ref: '#/components/schemas/midi'
+    midi-bytes:
+      summary: A midi message in raw bytes
+      payload:
+        $ref: '#/components/schemas/midi-bytes'
+  schemas:
+    midi:
+      type: object
+      properties:
+        midiPort:
+          type: integer
+          minimum: 1
+          description: Midi port number
+        channel:
+          type: integer
+          minimum: 1
+          description: Midi channel
+        status:
+          type: integer
+          description: Midi status message such as note-on
+        note:
+          type: integer
+          minimum: 1
+          description: Midi note number
+        velocity:
+          type: integer
+          minimum: 1
+          description: Midi channel
+    midi-bytes:
+      type: string
+id: 'urn:midi-mercury'
+channels:
+  midi:
+    x-service-name: midi
+    publish:
+      message:
+        oneOf: 
+          - $ref: '#/components/messages/midi'
+          - $ref: '#/components/messages/midi-bytes'
+    subscribe:
+      message:
+        oneOf: 
+          - $ref: '#/components/messages/midi'
+          - $ref: '#/components/messages/midi-bytes'
