@@ -1,25 +1,62 @@
 asyncapi: 2.0.0-rc1
+id: 'urn:midi-mercury'
 info:
   title: midi-mercury
   version: 1.0.0
   description: |
     Sends midi messages through message brokers.
+  contact:
+    name: Michael Davis
+    url: http://midi.damaru.com
+    email: music@damaru.com
   license:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
 servers:
-  - url: messaging.solace.cloud
+  - url: vmr-mr8v6yiwia8l.messaging.solace.cloud
     description: Solace broker
     variables:
       password:
-        default: somepassword
+        default: ImNotTellingYou
       port:
-        default: '55555'
+        default: '20323'
       username:
         default: solace-cloud-client
       vpn:
-        default: vmr-123
+        default: msgvpn-8mqb134z9
     protocol: smf
+channels:
+  midi/{port}/{channel}:
+    parameters:
+      - name: port
+        description: The MIDI port number, 0 or greater
+        schema:
+          type: integer
+      - name: channel
+        description: The MIDI channel number, 0-15
+        schema:
+          type: integer
+    x-service-name: midi
+    publish:
+      operationId: sendMIDI
+      description: send a MIDI message
+      message:
+        oneOf:
+          - $ref: '#/components/messages/midi'
+          - $ref: '#/components/messages/midi-bytes'
+      protocolInfo:
+        solace:
+          directMessaging: true
+    subscribe:
+      operationId: receiveMIDI
+      description: receives a MIDI message
+      message:
+        oneOf:
+          - $ref: '#/components/messages/midi'
+          - $ref: '#/components/messages/midi-bytes'
+      protocolInfo:
+        solace:
+          directMessaging: true
 components:
   messages:
     midi:
@@ -55,17 +92,5 @@ components:
           description: Midi channel
     midi-bytes:
       type: string
-id: 'urn:midi-mercury'
-channels:
-  midi:
-    x-service-name: midi
-    publish:
-      message:
-        oneOf: 
-          - $ref: '#/components/messages/midi'
-          - $ref: '#/components/messages/midi-bytes'
-    subscribe:
-      message:
-        oneOf: 
-          - $ref: '#/components/messages/midi'
-          - $ref: '#/components/messages/midi-bytes'
+      format: binary
+      

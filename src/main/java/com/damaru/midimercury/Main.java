@@ -133,6 +133,7 @@ public class Main {
 
         ret = devices.get(num - 1);
         log("You picked " + ret.getDeviceInfo().getName());
+        scanner.close();
         return ret;
     }
 
