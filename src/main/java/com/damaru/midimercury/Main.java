@@ -70,9 +70,9 @@ public class Main {
 
             Transmitter transmitter = fromDevice.getTransmitter();
             publisher = new SolacePublisher(cmd);
-            MidiReceiver midiReceiver = new MidiReceiver(cmd, publisher);
+            MidiMercuryReceiver midiMercuryReceiver = new MidiMercuryReceiver(cmd, publisher);
             fromDevice.open();
-            transmitter.setReceiver(midiReceiver);
+            transmitter.setReceiver(midiMercuryReceiver);
         }
 
         if (to) {
@@ -143,47 +143,27 @@ public class Main {
         // int numMessages = 10000;
         int numMessages = 1;
 
-        MidiReceiver mr = new MidiReceiver(cmd, publisher);
+        MidiMercuryReceiver midiMercuryReceiver = new MidiMercuryReceiver(cmd, publisher);
 
         log("" + (new Date()) + " About to send midi via text.");
-        mr.setBinary(false);
+        midiMercuryReceiver.setBinary(false);
         ShortMessage sm = new ShortMessage(144, 2, 3, 4);
         for (int i = 0; i < numMessages; i++) {
-            mr.send(sm, 0);
+            midiMercuryReceiver.send(sm, 0);
         }
         log("" + (new Date()) + " Finish sending midi.");
 
         Thread.sleep(5000);
 
         log("" + (new Date()) + " About to send midi via binary.");
-        mr.setBinary(true);
+        midiMercuryReceiver.setBinary(true);
         for (int i = 0; i < numMessages; i++) {
-            mr.send(sm, 0);
+            midiMercuryReceiver.send(sm, 0);
         }
 
         log("" + (new Date()) + " Finish sending midi.");
 
-        mr.close();
-
-        // String text = "Support for nested build without a settings file was
-        // deprecated and will be removed in Gradle 5.0.";
-        // String topic = "a/a";
-        //
-        // log("" + (new Date()) + " About to send text.");
-        // for (int i = 0; i < numMessages; i++) {
-        // publisher.sendText(text, topic);
-        // }
-        // log("" + (new Date()) + " Finish sending text.");
-        // byte[] data = text.getBytes();
-        //
-        // Thread.sleep(5000);
-        // log("" + (new Date()) + " About to send bytes.");
-        // for (int i = 0; i < numMessages; i++) {
-        // publisher.sendBinary(data, topic);
-        // }
-        //
-        // log("" + (new Date()) + " Finish sending text.");
-
+        midiMercuryReceiver.close();
     }
     
     static class ShutdownHook extends Thread {

@@ -8,13 +8,13 @@ import org.apache.commons.cli.CommandLine;
 
 import com.google.gson.Gson;
 
-public class MidiReceiver implements Receiver {
+public class MidiMercuryReceiver implements Receiver {
 
     private Gson gson = new Gson();
     private SolacePublisher publisher;
     private boolean binary;
 
-    public MidiReceiver(CommandLine cmd, SolacePublisher publisher) {
+    public MidiMercuryReceiver(CommandLine cmd, SolacePublisher publisher) {
         this.publisher = publisher;
         if (cmd.hasOption('b')) {
             binary = true;
