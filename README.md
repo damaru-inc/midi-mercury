@@ -16,3 +16,10 @@ Example run command:
 java -jar build/libs/midi-mercury.jar -h myhost.com:55555 -v default -u myUsername -p myPassword -t
 
 Either the -f or the -t or both must be given. If -f is given, the program will prompt you to select a midi device to read from. If -t is given it will prompt you to select a midi device to write to.
+
+## Using Software Synthesizers
+
+In order to connect to a software synthesizer, you need to use a software MIDI device. If you're using a Mac, run Audio MIDI Setup, open the MIDI Studio window, and you should see something called the IAC Driver.
+
+When you run midi-mercury, the IAC Driver should show up on the list of devices you can select. So select it. On your software instrument, select the IAC Driver as the input MIDI source.
+
