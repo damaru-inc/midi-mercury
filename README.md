@@ -23,3 +23,6 @@ In order to connect to a software synthesizer, you need to use a software MIDI d
 
 When you run midi-mercury, the IAC Driver should show up on the list of devices you can select. So select it. On your software instrument, select the IAC Driver as the input MIDI source.
 
+On Windows, the Microsoft MIDI Mapper probably does something similar, though I haven't tested it.
+
+If you don't have a software synthesizer you can use the Gervill Synthesizer that comes packaged with Java, that should show up on the list of output devices.
